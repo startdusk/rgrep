@@ -9,8 +9,13 @@ $ rgrep '恶意' 'e*.txt'
 ```
 
 输出:
-<img src="./docs/output.png">
 
+<center>
+<img src="./docs/output.png">
+</center>
 
 程序流程:
+
+<center>
 <img src="./docs/process.png" />
+</center>
