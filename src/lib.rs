@@ -1,4 +1,4 @@
-use clap::{AppSettings, Parser};
+use clap::Parser;
 use colored::*;
 use itertools::Itertools;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -19,7 +19,6 @@ pub type StrategyFn<W, R> = fn(&Path, BufReader<R>, &Regex, &mut W) -> Result<()
 /// 简化版本的 grep，支持正则表达式和文件通配符
 #[derive(Parser, Debug)]
 #[clap(version = "1.0", author = "startdusk")]
-#[clap(setting = AppSettings::ColoredHelp)]
 pub struct GrepConfig {
     /// 用于查找的正则表达式
     pattern: String,
@@ -110,12 +109,12 @@ mod tests {
 
     #[test]
     fn format_line_should_work() {
-        let result = format_line("Hello, Tyr~", 1000, 7..10);
+        let result = format_line("Hello, startdusk~", 1000, 7..16);
         let expected = format!(
             "{0: >6}:{1: <3} Hello, {2}~",
-            "1000".blue(),
-            "7".cyan(),
-            "Tyr".red()
+            1000.to_string().blue(),
+            8.to_string().cyan(),
+            "startdusk".red()
         );
         assert_eq!(result, expected);
     }
@@ -123,16 +122,16 @@ mod tests {
     #[test]
     fn default_strategy_should_work() {
         let path = Path::new("src/main.rs");
-        let input = b"hello world!\nhey Tyr!";
+        let input = b"hello world!\nhey startdusk!";
         let reader = BufReader::new(&input[..]);
-        let pattern = Regex::new(r"he\\w+").unwrap();
+        let pattern = Regex::new(r"he[^\\s]+").unwrap();
         let mut writer = Vec::new();
         default_strategy(path, reader, &pattern, &mut writer).unwrap();
         let result = String::from_utf8(writer).unwrap();
         let expected = [
             String::from("src/main.rs"),
-            format_line("hello world!", 1, 0..5),
-            format_line("hey Tyr!\n", 2, 0..3),
+            format_line("hello world!", 1, 0..12),
+            format_line("hey startdusk!\n", 2, 0..4),
         ];
 
         assert_eq!(result, expected.join("\n"));
